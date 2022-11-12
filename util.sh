@@ -100,12 +100,35 @@ command_exists() {
 }
 
 curlToFile() {
-	exec_cmd_nobail_naked "$G_CURL_CMD	--connect-timeout 10 \
+	curl_temp_file=`mktemp`
+	curl_command_this_time="$G_CURL_CMD	-w %{http_code} --connect-timeout 10 \
 --max-time 10 \
 --retry 6 \
 --retry-delay 3 \
 --retry-max-time 40 \
--s -L --output $2 $1"
+-s -L --output $curl_temp_file $1"
+	print_info Going to execute $curl_command_this_time
+	curl_http_code=`$curl_command_this_time`
+	if [[ $((curl_http_code)) -eq 200 ]]
+	then
+		: # NOP
+	else
+		print_error CODE $curl_http_code
+		G_RET=1
+		rm $curl_temp_file
+		return
+	fi
+	curl_temp_file_as_string=`cat $curl_temp_file`
+	curl_temp_file_length=${#curl_temp_file_as_string}
+	if [[ $curl_temp_file_length -lt 3 ]]
+	then
+		print_error curl failed: Zero length result - $1 
+		G_RET=1
+	else
+		cat $curl_temp_file > $2
+		G_RET=0
+	fi
+	rm $curl_temp_file
 }
 
 trimHtml() {
@@ -137,4 +160,8 @@ currentTimeMills() {
 
 currentTimeISO() {
 	G_RET=$(date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')
+}
+
+printCurrentTimeISO() {
+	echo $(date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')
 }
