@@ -132,6 +132,24 @@ archive ${ng_list[@]}
 archive ${topic_list[@]}
 
 cd $G_GIT_REPO_DIR
+
+git_lock_counter=0
+
+while [ -e $G_GIT_REPO_DIR/.git/index.lock ] && [ $((git_lock_counter)) -lt 5 ]
+do
+	print_warning Git is locked, waiting
+	((git_lock_counter++))
+	print_warning Git lock counter: $git_lock_counter
+	sleep 3
+done
+
+if [ $((git_lock_counter)) -ge 5 ]
+then
+	print_error Git lock counter over maximum value 5: $git_lock_counter
+	print_error Going to remove .git/index.lock forcibly.
+	exec_cmd_nobail_naked "rm -rf $G_GIT_REPO_DIR/.git/index.lock"
+fi
+
 git_commit_msg="${TOPIC_TYPE^^} TOPIC: "
 currentTimeISO
 git_commit_msg+=" $G_RET "
@@ -139,6 +157,7 @@ currentTimeMills
 git_commit_msg+="| $G_RET"
 exec_cmd_nobail_naked "rm -rf $TOPIC_TYPE/rakuen_topic_list.html"
 exec_cmd_nobail_naked "$G_GIT_CMD add $TOPIC_TYPE/*"
+
 $G_GIT_CMD commit --allow-empty -m "$git_commit_msg"
 exec_cmd_nobail_naked "$G_GIT_CMD push"
 cd $G_PWD
