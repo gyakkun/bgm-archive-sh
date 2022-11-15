@@ -64,8 +64,8 @@ print_info Current Time ISO 8601: $G_RET
 
 # Get NG list from file
 declare -a ng_list
-#cat $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt | sort -u | uniq > $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
-readarray -t ng_list < $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
+ng_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt | sort -u | uniq`) # > $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
+#readarray -t ng_list < $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
 > $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
 print_success NG LIST ${ng_list[@]}
 
