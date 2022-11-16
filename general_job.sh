@@ -161,5 +161,6 @@ exec_cmd_nobail_naked "$G_GIT_CMD add $TOPIC_TYPE/*"
 $G_GIT_CMD commit --allow-empty -m "$git_commit_msg"
 exec_cmd_nobail_naked "$G_GIT_CMD push"
 cd $G_PWD
+exec_cmd_nobail "$E_WEBHOOK_CMD"
 
 print_info success
