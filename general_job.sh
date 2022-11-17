@@ -75,7 +75,7 @@ randBgmDomain
 print_info Random Bangumi domain picked : $G_RET
 printf -v TMP_BGM_RAUKEN_TOPICLIST_URL "$BGM_RAUKEN_TOPICLIST_URL_TEMPLATE" $G_RET
 curlToFile $TMP_BGM_RAUKEN_TOPICLIST_URL $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html
-topic_list=(`grep -Po '(?<=href="/rakuen/topic/'$TOPIC_TYPE'/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | sort -u | uniq | shuf`)
+topic_list=(`grep -Po '(?<=href="/rakuen/topic/'$TOPIC_TYPE'/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | sort -u | uniq`)
 # Clear
 > $G_GIT_REPO_DIR/$TOPIC_TYPE/topiclist.txt
 # Write
@@ -84,6 +84,8 @@ do
 	echo "$i" >> $G_GIT_REPO_DIR/$TOPIC_TYPE/topiclist.txt
 done
 print_success TOPIC LIST: ${topic_list[@]}
+# Shuffle the topic list
+topic_list=(`shuf -e ${topic_list[@]}`)
 
 
 function archive() {
