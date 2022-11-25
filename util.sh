@@ -112,8 +112,7 @@ curlToFile() {
 	curl_command_this_time+=' --retry-max-time 40 '
 	curl_command_this_time+=' -s -L --output '$curl_temp_file' '$1' '
 	print_info Going to execute $curl_command_this_time
-	#echo $curl_command_this_time
-	curl_http_code=`$G_CURL_CMD -w %{http_code} --connect-timeout 10 -b $curl_cookie_file -A "${curl_ua}" --max-time 10 --retry 6 --retry-delay 3 --retry-max-time 40 -v -L --output $curl_temp_file $1`
+	curl_http_code=`$G_CURL_CMD -w %{http_code} --connect-timeout 10 -b $curl_cookie_file -A "${curl_ua}" --max-time 10 --retry 6 --retry-delay 3 --retry-max-time 40 -s -L --output $curl_temp_file $1`
 	if [[ $((curl_http_code)) -eq 200 ]]
 	then
 		: # NOP
