@@ -101,14 +101,19 @@ command_exists() {
 
 curlToFile() {
 	curl_temp_file=`mktemp`
-	curl_command_this_time="$G_CURL_CMD	-w %{http_code} --connect-timeout 10 \
---max-time 10 \
---retry 6 \
---retry-delay 3 \
---retry-max-time 40 \
--s -L --output $curl_temp_file $1"
+	curl_cookie_file=${E_BGM_COOKIE_FILE:-/dev/null}
+	curl_ua=${E_BGM_UA:-"curl"}
+	curl_command_this_time=''$G_CURL_CMD' -w %{http_code} --connect-timeout 10 '
+	curl_command_this_time+=' -b '$curl_cookie_file' '
+	curl_command_this_time+=' -A "'"${curl_ua}"'" '
+	curl_command_this_time+=' --max-time 10 '
+	curl_command_this_time+=' --retry 6 '
+	curl_command_this_time+=' --retry-delay 3 '
+	curl_command_this_time+=' --retry-max-time 40 '
+	curl_command_this_time+=' -s -L --output '$curl_temp_file' '$1' '
 	print_info Going to execute $curl_command_this_time
-	curl_http_code=`$curl_command_this_time`
+	#echo $curl_command_this_time
+	curl_http_code=`$G_CURL_CMD -w %{http_code} --connect-timeout 10 -b $curl_cookie_file -A "${curl_ua}" --max-time 10 --retry 6 --retry-delay 3 --retry-max-time 40 -v -L --output $curl_temp_file $1`
 	if [[ $((curl_http_code)) -eq 200 ]]
 	then
 		: # NOP
