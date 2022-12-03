@@ -139,6 +139,7 @@ trimHtml() {
         sed -i 's|<script.*</script>||g' $1
         sed -i 's|^[ \t]*||g' $1
         sed -i '/^$/d' $1
+	sed -i 's|<input\s\+type="hidden"\s\+name="lastview"\s\+value="[0-9]\+"\s*/>|<input name="lastview" type="hidden" value="0" />|g' $1
 }
 
 tidyHtml() {
