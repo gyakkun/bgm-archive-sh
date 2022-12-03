@@ -46,6 +46,7 @@ SUCCESS_COUNTER=0
 FAILURE_COUNTER=0
 currentTimeMills
 START_TIME=$G_RET
+DURING_NG=0
 
 mkdir -p $G_GIT_REPO_DIR/$TOPIC_TYPE
 cd $G_GIT_REPO_DIR
@@ -112,7 +113,7 @@ function archive() {
 			if [[ $G_RET -eq 0 ]]
 			then
 				trimHtml $output_loc
-				tidyHtml $output_loc
+				[[ $DURING_NG -eq 0 ]] && tidyHtml $output_loc
 				((SUCCESS_COUNTER++))
 				print_success SUCCESS_COUNTER: $SUCCESS_COUNTER
 			else
@@ -130,7 +131,9 @@ function archive() {
 	done
 }
 
+DURING_NG=1
 archive ${ng_list[@]}
+DURING_NG=0
 archive ${topic_list[@]}
 
 cd $G_GIT_REPO_DIR
