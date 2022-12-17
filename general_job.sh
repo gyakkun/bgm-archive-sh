@@ -131,10 +131,10 @@ function archive() {
 	done
 }
 
+archive ${topic_list[@]}
 DURING_NG=1
 archive ${ng_list[@]}
 DURING_NG=0
-archive ${topic_list[@]}
 
 cd $G_GIT_REPO_DIR
 
