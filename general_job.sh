@@ -132,8 +132,9 @@ function archive() {
 		curlToFile $TMP_BGM_TOPIC_URL/$i $output_loc
 		if [[ $G_RET -eq 0 ]]
 		then
-			trimHtml $output_loc
+			trimHtmlBefore $output_loc
 			[[ $DURING_NG -eq 0 ]] && tidyHtml $output_loc
+			trimHtmlAfter $output_loc
 			((SUCCESS_COUNTER++))
 			print_success SUCCESS_COUNTER: $SUCCESS_COUNTER
 		else
