@@ -140,6 +140,7 @@ trimHtml() {
         sed -i 's|^[ \t]*||g' $1
         sed -i '/^$/d' $1
 	sed -i 's|<input\s\+type="hidden"\s\+name="lastview"\s\+value="[0-9]\+"\s*/>|<input name="lastview" type="hidden" value="0" />|g' $1
+	sed -i 's|<div\s\+class="speech"\s\+id="robot_speech"\s\+style="display:none;">.*</div>|<div class="speech" id="robot_speech" style="display:none;">Hi there, here is bgm-archive.</div>|g' $1
 }
 
 tidyHtml() {
