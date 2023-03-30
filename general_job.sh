@@ -124,6 +124,9 @@ function archive() {
 		mkdir -p $output_dir
 		randBgmDomain
 		printf -v TMP_BGM_TOPIC_URL "$BGM_TOPIC_URL_TEMPLATE" $G_RET
+		if [[ "$TOPIC_TYPE"=="blog" ]];then
+			printf -v TMP_BGM_TOPIC_URL "$BGM_BLOG_URL_TEMPLATE" $G_RET
+		fi
 		printCurrentTimeISO
 		print_info $TMP_BGM_TOPIC_URL/$i to $output_loc
 		curlToFile $TMP_BGM_TOPIC_URL/$i $output_loc
