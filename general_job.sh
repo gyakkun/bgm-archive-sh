@@ -103,15 +103,15 @@ function archive() {
 	for i in ${arr[@]}
 	do
 		print_info archiving $TOPIC_TYPE topic $i
-		if [[  "$TOPIC_TYPE"=="group" &&  " ${G_GROUP_TOPIC_AVOID_LIST[@]} " =~ " $i " ]];then
+		if [[  "$TOPIC_TYPE" == "group" &&  " ${G_GROUP_TOPIC_AVOID_LIST[@]} " =~ " $i " ]];then
 			print_warning $i is in AVOID LIST of $TOPIC_TYPE
 			continue
 		fi
-		if [[ "$TOPIC_TYPE"=="subject" &&" ${G_SUBJECT_TOPIC_AVOID_LIST[@]} " =~ " $i " ]];then
+		if [[ "$TOPIC_TYPE" == "subject" &&" ${G_SUBJECT_TOPIC_AVOID_LIST[@]} " =~ " $i " ]];then
 			print_warning $i is in AVOID LIST of $TOPIC_TYPE
 			continue
 		fi
-		if [[ "$TOPIC_TYPE"=="blog" &&" ${G_BLOG_AVOID_LIST[@]} " =~ " $i " ]];then
+		if [[ "$TOPIC_TYPE" == "blog" &&" ${G_BLOG_AVOID_LIST[@]} " =~ " $i " ]];then
 			print_warning $i is in AVOID LIST of $TOPIC_TYPE
 			continue
 		fi
@@ -124,7 +124,7 @@ function archive() {
 		mkdir -p $output_dir
 		randBgmDomain
 		printf -v TMP_BGM_TOPIC_URL "$BGM_TOPIC_URL_TEMPLATE" $G_RET
-		if [[ "$TOPIC_TYPE"=="blog" ]];then
+		if [[ "$TOPIC_TYPE" == "blog" ]];then
 			printf -v TMP_BGM_TOPIC_URL "$BGM_BLOG_URL_TEMPLATE" $G_RET
 		fi
 		printCurrentTimeISO
