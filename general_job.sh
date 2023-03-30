@@ -140,17 +140,17 @@ cd $G_GIT_REPO_DIR
 
 git_lock_counter=0
 
-while [ -e $G_GIT_REPO_DIR/.git/index.lock ] && [ $((git_lock_counter)) -lt 5 ]
+while [ -e $G_GIT_REPO_DIR/.git/index.lock ] && [ $((git_lock_counter)) -lt 72 ]
 do
 	print_warning Git is locked, waiting
 	((git_lock_counter++))
 	print_warning Git lock counter: $git_lock_counter
-	sleep 3
+	sleep 5
 done
 
-if [ $((git_lock_counter)) -ge 5 ]
+if [ $((git_lock_counter)) -ge 72 ]
 then
-	print_error Git lock counter over maximum value 5: $git_lock_counter
+	print_error Git lock counter over maximum value 72: $git_lock_counter
 	print_error Going to remove .git/index.lock forcibly.
 	exec_cmd_nobail_naked "rm -rf $G_GIT_REPO_DIR/.git/index.lock"
 fi
