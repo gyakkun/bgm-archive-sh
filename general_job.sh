@@ -73,6 +73,17 @@ ng_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt | sort -u | uniq`) # > $G_GIT_R
 > $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
 print_success NG LIST ${ng_list[@]}
 
+
+# Get Spot Check list from file
+declare -a sc_list
+touch $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
+sc_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt | sort -u | uniq`) # > $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
+#readarray -t sc_list < $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
+# $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
+print_success SPOT CHECK LIST ${sc_list[@]}
+
+
+
 # Get topic list from rakuen
 print_info Domain list ${BGM_DOMAIN_LIST[@]}
 randBgmDomain
@@ -155,6 +166,7 @@ archive ${topic_list[@]}
 DURING_NG=1
 archive ${ng_list[@]}
 DURING_NG=0
+archive ${sc_list[@]}
 
 cd $G_GIT_REPO_DIR
 
