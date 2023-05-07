@@ -70,7 +70,7 @@ declare -a ng_list
 touch $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
 ng_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt | sort -u | uniq`) # > $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
 #readarray -t ng_list < $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
-> $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
+#> $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
 print_success NG LIST ${ng_list[@]}
 
 
@@ -79,7 +79,7 @@ declare -a sc_list
 touch $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
 sc_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt | sort -u | uniq`) # > $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
 #readarray -t sc_list < $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
-# $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
+#> $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
 print_success SPOT CHECK LIST ${sc_list[@]}
 
 
@@ -198,6 +198,8 @@ exec_cmd_nobail_naked "$G_GIT_CMD add $TOPIC_TYPE/*"
 $G_GIT_CMD commit --allow-empty -m "$git_commit_msg"
 exec_cmd_nobail_naked "$G_GIT_CMD push"
 cd $G_PWD
+> $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
+> $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
 exec_cmd_nobail "$E_WEBHOOK_CMD"
 
 print_info success
