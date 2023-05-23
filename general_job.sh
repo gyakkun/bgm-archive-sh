@@ -83,6 +83,14 @@ sc_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt | sort -u | uniq`) # > $G_GIT_R
 print_success SPOT CHECK LIST ${sc_list[@]}
 
 
+# Get Spot Check list from file
+declare -a bn_list
+touch $G_GIT_REPO_DIR/$TOPIC_TYPE/bn.txt
+bn_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/bn.txt | sort -u | uniq`) # > $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
+#readarray -t sc_list < $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
+#> $G_GIT_REPO_DIR/$TOPIC_TYPE/bn.txt
+print_success BANNED GROUP LIST ${bn_list[@]}
+
 
 # Get topic list from rakuen
 print_info Domain list ${BGM_DOMAIN_LIST[@]}
@@ -167,6 +175,7 @@ DURING_NG=1
 archive ${ng_list[@]}
 DURING_NG=0
 archive ${sc_list[@]}
+archive ${bn_list[@]}
 
 cd $G_GIT_REPO_DIR
 
@@ -200,6 +209,7 @@ exec_cmd_nobail_naked "$G_GIT_CMD push"
 cd $G_PWD
 > $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
 > $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
+> $G_GIT_REPO_DIR/$TOPIC_TYPE/bn.txt
 exec_cmd_nobail "$E_WEBHOOK_CMD"
 
 print_info success
