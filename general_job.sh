@@ -65,9 +65,9 @@ print_info Current Time ISO 8601: $G_RET
 
 # Get NG list from file
 declare -a ng_list
-ng_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt | sort -u | uniq`) # > $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
-#readarray -t ng_list < $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
-> $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
+ng_list=(`cat $G_GIT_REPO_DIR/$TOPIC_TYPE/display_ng.txt | sort -u | uniq`) # > $G_GIT_REPO_DIR/$TOPIC_TYPE/display_ng.txt
+#readarray -t ng_list < $G_GIT_REPO_DIR/$TOPIC_TYPE/display_ng.txt
+# > $G_GIT_REPO_DIR/$TOPIC_TYPE/display_ng.txt
 print_success NG LIST ${ng_list[@]}
 
 # Get topic list from rakuen
@@ -113,12 +113,13 @@ function archive() {
 			if [[ $G_RET -eq 0 ]]
 			then
 				trimHtml $output_loc
-				[[ $DURING_NG -eq 0 ]] && tidyHtml $output_loc
+				#[[ $DURING_NG -eq 0 ]] && tidyHtml $output_loc
+				tidyHtml $output_loc
 				((SUCCESS_COUNTER++))
 				print_success SUCCESS_COUNTER: $SUCCESS_COUNTER
 			else
-				print_error Archiving $TOPIC_TYPE id $i failed. Writing to ng.txt
-				echo "$i" >> $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
+				print_error Archiving $TOPIC_TYPE id $i failed. Writing to display_ng.txt
+				echo "$i" >> $G_GIT_REPO_DIR/$TOPIC_TYPE/display_ng.txt
 				((FAILURE_COUNTER++))
 				print_error FAILURE_COUNTER: $FAILURE_COUNTER
 			fi
