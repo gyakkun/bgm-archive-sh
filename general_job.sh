@@ -202,10 +202,24 @@ git_commit_msg+=" $G_RET "
 currentTimeMills
 git_commit_msg+="| $G_RET"
 exec_cmd_nobail_naked "rm -rf $TOPIC_TYPE/rakuen_topic_list.html"
-exec_cmd_nobail_naked "$G_GIT_CMD add $TOPIC_TYPE/*"
 
-$G_GIT_CMD commit --allow-empty -m "$git_commit_msg"
+currentTimeISO
+print_warning "About to git add $G_RET"
+find $G_GIT_REPO_DIR/$TOPIC_TYPE/  -type f | tr '\n' ' ' | xargs git add
+currentTimeISO
+print_warning "Finish git add $G_RET"
+
+
+currentTimeISO
+print_warning "About to git commit $G_RET"
+git commit --allow-empty -m "$git_commit_msg"
+currentTimeISO
+print_warning "Finish git commit $G_RET"
+
 exec_cmd_nobail_naked "$G_GIT_CMD push"
+files_to_remove=`find $G_GIT_REPO_DIR/$TOPIC_TYPE/ -type d | tr '\n' ' '`
+print_warning "Removing files $files_to_remove"
+exec_cmd_nobail_naked "rm -rf $files_to_remove"
 cd $G_PWD
 > $G_GIT_REPO_DIR/$TOPIC_TYPE/ng.txt
 > $G_GIT_REPO_DIR/$TOPIC_TYPE/sc.txt
