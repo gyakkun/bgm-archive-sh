@@ -219,7 +219,7 @@ currentTimeISO
 print_warning "Finish git commit $G_RET"
 
 exec_cmd_nobail_naked "$G_GIT_CMD push"
-files_to_remove=`find $G_GIT_REPO_DIR/$TOPIC_TYPE/ -type d | tr '\n' ' '`
+files_to_remove=`find $G_GIT_REPO_DIR/$TOPIC_TYPE/ -mindepth 1 -type d | tr '\n' ' '`
 print_warning "Removing files $files_to_remove"
 exec_cmd_nobail_naked "rm -rf $files_to_remove"
 cd $G_PWD
