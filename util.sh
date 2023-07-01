@@ -146,6 +146,8 @@ trimHtmlAfter() {
 	sed -i 's|<div\s\+class="speech"\s\+id="robot_speech"\s\+style="display:none;">.*</div>|<div class="speech" id="robot_speech" style="display:none;">Hi there, here is bgm-archive.</div>|g' $1
 	sed -i 's|bg musume_[0-9]\+|bg musume_1|g' $1
 	sed -i 's|id="robot"|id="robot" hidden|g' $1
+	sed -i 's|^(window.NREUM.*$||g' $1
+	sed -i 's|^.*NRBA=o})();||g' $1
 }
 
 tidyHtml() {
