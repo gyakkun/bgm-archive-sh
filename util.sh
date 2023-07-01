@@ -148,6 +148,7 @@ trimHtmlAfter() {
 	sed -i 's|id="robot"|id="robot" hidden|g' $1
 	sed -i 's|^(window.NREUM.*$||g' $1
 	sed -i 's|^.*NRBA=o})();||g' $1
+        sed -i '/^$/d' $1
 }
 
 tidyHtml() {
