@@ -154,6 +154,8 @@ function archive() {
 			trimHtmlBefore $output_loc
 			[[ $DURING_NG -eq 0 ]] && tidyHtml $output_loc
 			trimHtmlAfter $output_loc
+			getBaMetaTs
+			echo "${G_RET}" >> $output_loc
 			((SUCCESS_COUNTER++))
 			print_success SUCCESS_COUNTER: $SUCCESS_COUNTER
 		else

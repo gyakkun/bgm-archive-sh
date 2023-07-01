@@ -178,3 +178,11 @@ currentTimeISO() {
 printCurrentTimeISO() {
 	echo $(date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')
 }
+
+getBaMetaTs() {
+	meta_comment="<!-- ba-meta-ts:"
+	currentTimeMills
+	meta_comment+="${G_RET}"
+	meta_comment+=" -->"
+	G_RET=$meta_comment
+}
