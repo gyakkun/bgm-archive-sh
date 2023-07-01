@@ -4,7 +4,8 @@
 
 source ~/source/bgm-archive-sh/env.sh
 
-banned_group=("adc_zero" "guiwubangumi" "kink" "liujun" "witness")
+#banned_group=("adc_zero" "guiwubangumi" "kink" "liujun" "witness")
+banned_group=("adc_zero" "guiwubangumi" "kink" "witness")
 banned_file=~/source/bgm-archive/group/bn.txt
 time_hour=`date -Is | awk -F'T' '{printf $2}' | awk -F: '{printf $1}'`
 
@@ -26,6 +27,9 @@ for i in  ${banned_group[@]};do
 done
 
 # filter empty line
-#cat $banned_file
-cat $banned_file | awk NF | sort -rn > $banned_file
-#cat $banned_file
+echo ------ before sort ----
+cat $banned_file
+echo ---- sorting -----
+#cat $banned_file | awk NF | sort -rn > $banned_file
+echo ----- after sort ----
+cat $banned_file
