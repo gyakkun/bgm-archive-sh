@@ -4,10 +4,7 @@ export http_proxy=${http_proxy}
 export https_proxy=${https_proxy}
 
 export E_BGM_ARCHIVE_GIT_REPO=
-export E_BGM_JSON_GIT_REPO=
-export E_BGM_GROUP_TOPIC_AVOID_LIST=()
-export E_BGM_SUBJECT_TOPIC_AVOID_LIST=()
-export E_BGM_BLOG_AVOID_LIST=()
+export E_BGM_ARCHIVE_JSON_GIT_REPO=
 export E_BGM_COOKIE_FILE=
 touch $E_BGM_COOKIE_FILE
 export E_BGM_UA=
