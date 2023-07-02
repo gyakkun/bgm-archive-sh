@@ -19,3 +19,5 @@ export E_CURL_CMD="curl "
 export E_SLEEP_PERIOD=${E_SLEEP_PERIOD:-1}
 
 export E_WEBHOOK_CMD="echo WEBHOOK STUB"
+
+export E_BGM_TEST_CMD="curl -sL -b $E_BGM_COOKIE_FILE -A \"${E_BGM_UA}\" https://bgm.tv/m"
