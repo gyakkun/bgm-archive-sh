@@ -4,7 +4,9 @@ TOPIC_TYPE="$1" # group, subject
 
 G_PWD=`pwd`
 G_RET=""
-G_TOPIC_TYPE_ARR=("group" "subject" "blog")
+G_TOPIC_TYPE_ARR=("group" "subject" "blog" "ep" "person" "character")
+G_BEPC_TYPE_ARR=("blog" "ep" "person" "character")
+G_MONO_TYPE_ARR=("person" "character")
 
 source $G_PWD/env.sh
 source $G_PWD/util.sh
@@ -36,8 +38,9 @@ G_BLOG_AVOID_LIST=$E_BGM_BLOG_AVOID_LIST
 
 
 BGM_RAUKEN_TOPICLIST_URL_TEMPLATE="https://%s/rakuen/topiclist?type=$TOPIC_TYPE"
+BGM_MONO_TOPICLIST_URL_TEMPLATE="https://%s/rakuen/topiclist?type=mono&$TOPIC_TYPE"
 BGM_TOPIC_URL_TEMPLATE="https://%s/m/topic/$TOPIC_TYPE"
-BGM_BLOG_URL_TEMPLATE="https://%s/blog"
+BGM_BEPC_URL_TEMPLATE="https://%s/$TOPIC_TYPE"
 BGM_DOMAIN_LIST=$E_BGM_DOMAIN_LIST
 
 TMP_BGM_RAUKEN_TOPICLIST_URL=
@@ -95,14 +98,30 @@ print_success BANNED GROUP LIST ${bn_list[@]}
 # Get topic list from rakuen
 print_info Domain list ${BGM_DOMAIN_LIST[@]}
 randBgmDomain
-print_info Random Bangumi domain picked : $G_RET
-printf -v TMP_BGM_RAUKEN_TOPICLIST_URL "$BGM_RAUKEN_TOPICLIST_URL_TEMPLATE" $G_RET
+bgm_domain_picked=$G_RET
+print_info Random Bangumi domain picked : $bgm_domain_picked
+printf -v TMP_BGM_RAUKEN_TOPICLIST_URL "$BGM_RAUKEN_TOPICLIST_URL_TEMPLATE" $bgm_domain_picked
+if [[ " ${G_MONO_TYPE_ARR[@]} " =~ " $TOPIC_TYPE " ]];then
+	printf -v TMP_BGM_RAUKEN_TOPICLIST_URL "$BGM_MONO_TOPICLIST_URL_TEMPLATE" $bgm_domain_picked
+fi
 curlToFile $TMP_BGM_RAUKEN_TOPICLIST_URL $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html
-topic_list=(`grep -Po '(?<=href="/rakuen/topic/'$TOPIC_TYPE'/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | sort -rn | uniq`)
+
 
 # Blog
 if [ "$TOPIC_TYPE" == "blog" ]; then
-	topic_list=(`grep -Po '(?<=href="/blog/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | sort -rn | uniq`)
+	topic_list=(`grep -Po '(?<=href="/blog/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+# Person
+elif [ "$TOPIC_TYPE" == "person" ]; then
+	topic_list=(`grep -Po '(?<=href="/rakuen/topic/prsn/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+# Character
+elif [ "$TOPIC_TYPE" == "character" ]; then
+	topic_list=(`grep -Po '(?<=href="/rakuen/topic/crt/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+# Episode
+elif [ "$TOPIC_TYPE" == "ep" ]; then
+	topic_list=(`grep -Po '(?<=href="/rakuen/topic/ep/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+# Group / Subject Topic
+else
+	topic_list=(`grep -Po '(?<=href="/rakuen/topic/'$TOPIC_TYPE'/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | sort -rn | uniq`)
 fi
 
 # Clear
@@ -121,19 +140,6 @@ function archive() {
 	arr=("$@")
 	for i in ${arr[@]}
 	do
-		print_info archiving $TOPIC_TYPE topic $i
-		if [[  "$TOPIC_TYPE" == "group" &&  " ${G_GROUP_TOPIC_AVOID_LIST[@]} " =~ " $i " ]];then
-			print_warning $i is in AVOID LIST of $TOPIC_TYPE
-			continue
-		fi
-		if [[ "$TOPIC_TYPE" == "subject" &&" ${G_SUBJECT_TOPIC_AVOID_LIST[@]} " =~ " $i " ]];then
-			print_warning $i is in AVOID LIST of $TOPIC_TYPE
-			continue
-		fi
-		if [[ "$TOPIC_TYPE" == "blog" &&" ${G_BLOG_AVOID_LIST[@]} " =~ " $i " ]];then
-			print_warning $i is in AVOID LIST of $TOPIC_TYPE
-			continue
-		fi
 		ten_thousand=$(expr $i / 10000)
 		printf -v ten_thousand "%02d" $ten_thousand
 		hundred=$(expr $(expr $i % 10000) / 100)
@@ -143,8 +149,8 @@ function archive() {
 		mkdir -p $output_dir
 		randBgmDomain
 		printf -v TMP_BGM_TOPIC_URL "$BGM_TOPIC_URL_TEMPLATE" $G_RET
-		if [[ "$TOPIC_TYPE" == "blog" ]];then
-			printf -v TMP_BGM_TOPIC_URL "$BGM_BLOG_URL_TEMPLATE" $G_RET
+		if [[ " ${G_BEPC_TYPE_ARR[@]} " =~ " $TOPIC_TYPE " ]];then
+			printf -v TMP_BGM_TOPIC_URL "$BGM_BEPC_URL_TEMPLATE" $G_RET
 		fi
 		printCurrentTimeISO
 		print_info $TMP_BGM_TOPIC_URL/$i to $output_loc
