@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PWD=`pwd`
 
@@ -13,6 +13,7 @@ echo time_hour $time_hour
 
 for i in  ${topic_type[@]};do
 	banned_file=$E_BGM_ARCHIVE_GIT_REPO/$i/bn.txt
+	[[ ! -f "$banned_file" ]] && continue
 	>$banned_file
         echo checking max id of topic $i
         tmpfile=`mktemp`
