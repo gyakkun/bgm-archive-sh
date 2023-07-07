@@ -187,3 +187,11 @@ getBaMetaTs() {
 	meta_comment+=" -->"
 	G_RET=$meta_comment
 }
+
+getBaMetaTsForFile() {
+	local topic_id=$1
+	meta_ts="${topic_id}:"
+	currentTimeMills
+	meta_ts+="${G_RET}"
+	G_RET=$meta_ts
+}

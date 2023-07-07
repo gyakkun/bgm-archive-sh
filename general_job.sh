@@ -53,6 +53,9 @@ currentTimeMills
 START_TIME=$G_RET
 DURING_NG=0
 
+META_TS_FILE=$G_GIT_REPO_DIR/$TOPIC_TYPE/meta_ts.txt
+>$META_TS_FILE
+
 mkdir -p $G_GIT_REPO_DIR/$TOPIC_TYPE
 cd $G_GIT_REPO_DIR
 print_info PWD: `pwd`
@@ -160,8 +163,8 @@ function archive() {
 			trimHtmlBefore $output_loc
 			[[ $DURING_NG -eq 0 ]] && tidyHtml $output_loc
 			trimHtmlAfter $output_loc
-			getBaMetaTs
-			echo "${G_RET}" >> $output_loc
+			getBaMetaTsForFile $i
+			echo "${G_RET}" >> $META_TS_FILE
 			((SUCCESS_COUNTER++))
 			print_success SUCCESS_COUNTER: $SUCCESS_COUNTER
 		else
