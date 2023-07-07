@@ -155,6 +155,7 @@ tidyHtml() {
 	if command_exists tidy; then
 		print_info tidying $i
 		exec_cmd_nobail_naked "tidy --drop-empty-elements no \
+--hide-comments yes \
 --tidy-mark no \
 --wrap 0 \
 --sort-attributes alpha \
