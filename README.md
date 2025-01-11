@@ -19,7 +19,7 @@ $ git commit --allow-empty -m "META: Initialize git repo."
 ```
 
 If you want to log in to see some hidden topics, you may also need to provide the cookie and corresponding user-agent
-string. Use this Chrome extension to help you get the curl capable format cookie
+string. Use this Chrome extension to help you get the curl compatible format cookie
 file: [Get cookies.txt LOCALLY](https://chromewebstore.google.com/detail/cclelndahbckbenkjhflpdbgdldlbecc). For UA
 string just visit `chrome://version/`, it's below the "Javascript: V8" line. Then you should be able to fill the
 `E_BGM_COOKIE_FILE` and `E_BGM_UA` env vars. The UA string should be surrounded by single quotes.
