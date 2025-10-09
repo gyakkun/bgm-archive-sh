@@ -112,19 +112,19 @@ curlToFile $TMP_BGM_RAUKEN_TOPICLIST_URL $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topi
 
 # Blog
 if [ "$TOPIC_TYPE" == "blog" ]; then
-	topic_list=(`grep -Po '(?<=href="/blog/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+	topic_list=(`grep -aPo '(?<=href="/blog/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
 # Person
 elif [ "$TOPIC_TYPE" == "person" ]; then
-	topic_list=(`grep -Po '(?<=href="/rakuen/topic/prsn/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/prsn/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
 # Character
 elif [ "$TOPIC_TYPE" == "character" ]; then
-	topic_list=(`grep -Po '(?<=href="/rakuen/topic/crt/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/crt/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
 # Episode
 elif [ "$TOPIC_TYPE" == "ep" ]; then
-	topic_list=(`grep -Po '(?<=href="/rakuen/topic/ep/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/ep/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
 # Group / Subject Topic
 else
-	topic_list=(`grep -Po '(?<=href="/rakuen/topic/'$TOPIC_TYPE'/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | sort -rn | uniq`)
+	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/'$TOPIC_TYPE'/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | sort -rn | uniq`)
 fi
 
 # Clear
