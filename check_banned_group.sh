@@ -2,16 +2,18 @@
 
 #PWD=`pwd`
 
-source ~/source/bgm-archive-sh/env.sh
+source ~/source/bgm-archive-gre-sh/env.sh
 
 #banned_group=("adc_zero" "guiwubangumi" "kink" "liujun" "witness")
-banned_group=("adc_zero" "guiwubangumi" "kink" "witness")
-banned_file=~/source/bgm-archive/group/bn.txt
-time_hour=`date -Is | awk -F'T' '{printf $2}' | awk -F: '{printf $1}'`
+banned_group=("adc_zero" "guiwubangumi" "kink" "witness" "jz" "china_666" "xuesaiqiangban" "ceui111")
+banned_file=~/source/bgm-archive-gre/group/bn.txt
+time_hour=`date -Is -u | awk -F'T' '{printf $2}' | awk -F: '{printf $1}'`
 
 echo time_hour $time_hour
 
 [ $time_hour -ne '20'  ] && exit 1
+
+> $banned_file
 
 for i in  ${banned_group[@]};do
 	echo checking $i
