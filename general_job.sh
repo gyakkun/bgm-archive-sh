@@ -62,7 +62,7 @@ print_info PWD: `pwd`
 print_info Initializing git repository
 exec_cmd_nobail_naked "$G_GIT_CMD init"
 print_info Pulling from remote
-exec_cmd_nobail_naked "$G_GIT_CMD pull"
+# exec_cmd_nobail_naked "$G_GIT_CMD pull"
 cd $G_PWD
 print_info PWD: `pwd`
 
@@ -121,10 +121,10 @@ elif [ "$TOPIC_TYPE" == "character" ]; then
 	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/crt/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
 # Episode
 elif [ "$TOPIC_TYPE" == "ep" ]; then
-	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/ep/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq`)
+	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/ep/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq | head -n 50`)
 # Group / Subject Topic
 else
-	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/'$TOPIC_TYPE'/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | sort -rn | uniq`)
+	topic_list=(`grep -aPo '(?<=href="/rakuen/topic/'$TOPIC_TYPE'/)[0-9]+' $G_GIT_REPO_DIR/$TOPIC_TYPE/rakuen_topic_list.html | uniq | head -n 50`)
 fi
 
 # Clear
@@ -227,7 +227,7 @@ git commit --allow-empty -m "$git_commit_msg"
 currentTimeISO
 print_warning "Finish git commit $G_RET"
 
-exec_cmd_nobail_naked "$G_GIT_CMD push"
+#exec_cmd_nobail_naked "$G_GIT_CMD push"
 files_to_remove=`find $G_GIT_REPO_DIR/$TOPIC_TYPE/ -mindepth 1 -type d | tr '\n' ' '`
 print_warning "Removing files $files_to_remove"
 exec_cmd_nobail_naked "rm -rf $files_to_remove"

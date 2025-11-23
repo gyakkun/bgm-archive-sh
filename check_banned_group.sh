@@ -6,7 +6,7 @@ source ~/source/bgm-archive-sh/env.sh
 
 #banned_group=("adc_zero" "guiwubangumi" "kink" "liujun" "witness")
 banned_group=("adc_zero" "guiwubangumi" "kink" "witness")
-banned_file=~/source/bgm-archive/group/bn.txt
+banned_file=~/source/bgm-archive-gre/group/bn.txt
 time_hour=`date -Is | awk -F'T' '{printf $2}' | awk -F: '{printf $1}'`
 
 echo time_hour $time_hour

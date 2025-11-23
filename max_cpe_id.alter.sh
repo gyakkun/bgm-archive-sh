@@ -11,7 +11,7 @@ date_dd=`date -Is -u | awk -F'-' '{print $3}'  | awk -F'T' '{print $1}'`
 echo time_hour $time_hour
 echo date_dd $date_dd
 
-[ $time_hour -ne '19'  ] && exit 1
+#[ $time_hour -ne '19'  ] && exit 1
 #[ "`expr $date_dd % 7`" -ne '3' ] && exit 1
 
 
@@ -41,14 +41,13 @@ for i in  ${topic_type[@]};do
 	pwd
 	cur_max_id=`ls | sort -rn | head -n1 | awk -F'.' '{print $1}'`
 	echo cur max id $cur_max_id
-	# [[ -z "$cur_max_id" ]] && continue
+	[[ -z "$cur_max_id" ]] && continue
 	[[ -z "$max_id" ]] && continue
-	# [[ $cur_max_id -ge $max_id ]] && continue
+	[[ $cur_max_id -ge $max_id ]] && continue
 	cd $PWD
-	# for (( j=$cur_max_id ; j<=$max_id ; j++ )); do
-	#	echo $j >> $banned_file
-	#done
-	echo $max_id >> $banned_file
+	for (( j=$cur_max_id ; j<=$max_id ; j++ )); do
+		echo $j >> $banned_file
+	done
 	echo ids to check
 	cat $banned_file
         rm -rf $tmpfile
