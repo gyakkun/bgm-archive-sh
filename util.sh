@@ -136,6 +136,28 @@ curlToFile() {
 }
 
 trimHtmlBefore() {
+        OLD_USER=$(sed -nE 's/.*href="\/book\/list\/([^/"]+).*/\1/p' $1 | head -1)
+	if [[ -z "$OLD_USER" ]]; then
+	    OLD_USER="bgmarchive"
+	fi
+	NEW_USER=gyakkun
+        NEW_UID=304116
+        NEW_NAME='304116'
+
+	#echo old user $OLD_USER
+	#echo new user $NEW_USER
+	#echo command "s|(href=\"[^\"]*/?)${OLD_USER}([/\"\?]|$)|\1${NEW_USER}\2|g"
+
+	#echo debug1
+        sed -i -E \
+          -e "s|(CHOBITS_UID\s*=\s*)[0-9]+|\1$NEW_UID|" \
+          -e "s|(CHOBITS_USERNAME\s*=\s*)'[^']*'|\1'$NEW_NAME'|" \
+          $1
+	#echo debug2
+	# href should be replaced by uid since gyakkun has no username
+	sed -i -E "s#(href=\"[^\"]*/?)${OLD_USER}([/\"\?]|$)#\1${NEW_UID}\2#g" $1
+	#echo debug3
+	sed -i -E -e "s#>([[:space:]]*)${OLD_USER}([[:space:]]*)<#>\1${NEW_USER}\2<#g" $1
         sed -i 's|<script.*</script>||g' $1
         sed -i 's|^[ \t]*||g' $1
         sed -i '/^$/d' $1
