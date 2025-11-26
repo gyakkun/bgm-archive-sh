@@ -143,6 +143,9 @@ trimHtmlBefore() {
 	NEW_USER=gyakkun
         NEW_UID=304116
         NEW_NAME='304116'
+	FORMHASH=$(sed -nE 's|.*href="https://bgm.tv/logout/([^"]+)".*|\1|p' $1 | head -1)
+	# dd if=/dev/urandom bs=4 count=1 2>/dev/null | xxd -p
+	FORMPLACEHOLDER=7f76f8a2
 
 	#echo old user $OLD_USER
 	#echo new user $NEW_USER
@@ -153,6 +156,7 @@ trimHtmlBefore() {
           -e "s|(CHOBITS_UID\s*=\s*)[0-9]+|\1$NEW_UID|" \
           -e "s|(CHOBITS_USERNAME\s*=\s*)'[^']*'|\1'$NEW_NAME'|" \
           $1
+	sed -i -E "s#${FORMHASH}#${FORMPLACEHOLDER}#g" $1
 	#echo debug2
 	# href should be replaced by uid since gyakkun has no username
 	sed -i -E "s#(href=\"[^\"]*/?)${OLD_USER}([/\"\?]|$)#\1${NEW_UID}\2#g" $1
