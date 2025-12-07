@@ -198,33 +198,71 @@ getBaMetaTsForFile() {
 }
 
 nextSleep() {
-	currentTimeMills
-	local current_time_ms=$G_RET
-	local start_time_ms=$1
-	start_time_ms=$(($start_time_ms < $current_time_ms ? $start_time_ms : $current_time_ms))
-	local current_idx_count_from_one=$2
-	current_idx_count_from_one=$(($current_idx_count_from_one >= 1 ? $current_idx_count_from_one : 1))
-	local total_count=$3
-	total_count=$(($total_count >= 1 ? $total_count : 1))
-	local target_time_sec_each_round=$4
-	local target_time_ms_each_round=$(awk "BEGIN {printf \"%d\",${target_time_sec_each_round}*1000}")
-	target_time_ms_each_round=$(($target_time_ms_each_round >= 512 ? $target_time_ms_each_round : 512))
-	
-	local elapsed_time_ms=$(($current_time_ms - $start_time_ms))
-	elapsed_time_ms=$(($elapsed_time_ms >= 0 ? $elapsed_time_ms : 0))
-	local avg_ms_each=$(($elapsed_time_ms / $current_idx_count_from_one))
-	local remain_ms=$(($target_time_ms_each_round * $total_count - $elapsed_time_ms)) # could be negative, guarded by the 200ms bound
-	local next_sleep_ms=$(($remain_ms / ($total_count - $current_idx_count_from_one)))
-	next_sleep_ms=$(($next_sleep_ms >= 512 ? $next_sleep_ms : 512))
-	# print_warning star_time_ms $start_time_ms
-	# print_warning current_time_ms $current_time_ms
-	# print_warning current_idx_count_from_one $current_idx_count_from_one
-	# print_warning total_count $total_count
-	# print_warning target_time_sec_each_round $target_time_sec_each_round
-	# print_warning target_time_ms_each_round $target_time_ms_each_round
-	# print_warning elapsed_time_ms $elapsed_time_ms
-	# print_warning avg_ms_each $avg_ms_each
-	# print_warning remain_ms $remain_ms
-	# print_warning next_sleep_ms $next_sleep_ms
-	G_RET=$(awk "BEGIN {printf \"%.2f\",${next_sleep_ms}/1000}")
+    # args:
+    # $1 start_time_ms
+    # $2 current_idx_count_from_one
+    # $3 total_count
+    # $4 target_time_sec_each_round
+    # $5 prev_sleep_sec
+    # $6 prev_iter_cost_ms   <-- NEW
+
+    currentTimeMills
+    local now_ms=$G_RET
+
+    local start_ms=$1
+    local idx=$2
+    local total=$3
+    local target_sec="$4"
+    local prev_sleep_sec="$5"
+    local prev_cost_ms="$6"
+
+	print_warning start_ms=$start_ms
+    print_warning idx=$idx
+    print_warning total=$total
+    print_warning target_sec=$target_sec
+    print_warning prev_sleep_sec=$prev_sleep_sec
+    print_warning prev_cost_ms=$prev_cost_ms
+
+    # convert to milliseconds
+    local target_ms
+    target_ms=$(awk "BEGIN {printf \"%d\", ${target_sec} * 1000}")
+    (( target_ms < 500 )) && target_ms=500
+
+    # basic pacing: how much total time should remain
+    local elapsed_ms=$((now_ms - start_ms))
+    (( elapsed_ms < 0 )) && elapsed_ms=0
+
+    local remain_rounds=$((total - idx))
+    (( remain_rounds < 1 )) && remain_rounds=1
+
+    local remain_ms=$((target_ms * total - elapsed_ms))
+    local ideal_sleep_ms=$((remain_ms / remain_rounds))
+
+    (( ideal_sleep_ms < 500 )) && ideal_sleep_ms=500
+
+    # convert previous sleep to ms
+    local prev_sleep_ms
+    prev_sleep_ms=$(awk "BEGIN {printf \"%d\", (${prev_sleep_sec}) * 1000}")
+    (( prev_sleep_ms < 1 )) && prev_sleep_ms=$ideal_sleep_ms
+
+    ### --- PROACTIVE CATCH-UP MODE ---
+    # if last iteration ran too long, shrink sleep aggressively
+    #
+    # Example: if prev_cost > 1.5x target, enter catch-up mode
+    #
+    if (( prev_cost_ms > target_ms * 150 / 100 )); then
+        # cut the ideal sleep significantly
+        ideal_sleep_ms=$(( ideal_sleep_ms / 3 ))
+        (( ideal_sleep_ms < 200 )) && ideal_sleep_ms=200
+    fi
+
+    ### --- MODERATE SMOOTHING (±40%) ---
+    local max_up=$(( prev_sleep_ms * 140 / 100 ))
+    local max_down=$(( prev_sleep_ms * 60 / 100 ))
+
+    if   (( ideal_sleep_ms > max_up   )); then ideal_sleep_ms=$max_up
+    elif (( ideal_sleep_ms < max_down )); then ideal_sleep_ms=$max_down
+    fi
+
+    G_RET=$(awk "BEGIN {printf \"%.2f\", ${ideal_sleep_ms}/1000}")
 }
