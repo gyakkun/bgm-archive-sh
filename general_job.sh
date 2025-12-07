@@ -49,6 +49,8 @@ TMP_BGM_BLOG_URL=
 
 SUCCESS_COUNTER=0
 FAILURE_COUNTER=0
+TOTAL_COUNTER=0
+TOTAL_SIZE=0
 currentTimeMills
 START_TIME=$G_RET
 DURING_NG=0
@@ -144,6 +146,7 @@ function archive() {
 	arr=("$@")
 	for i in ${arr[@]}
 	do
+	    ((TOTAL_COUNTER++))
 		ten_thousand=$(expr $i / 10000)
 		printf -v ten_thousand "%02d" $ten_thousand
 		hundred=$(expr $(expr $i % 10000) / 100)
@@ -176,13 +179,17 @@ function archive() {
 			((FAILURE_COUNTER++))
 			print_error FAILURE_COUNTER: $FAILURE_COUNTER
 		fi
-		sleep $E_SLEEP_PERIOD
+		nextSleep $START_TIME $TOTAL_COUNTER $TOTAL_SIZE $E_SLEEP_PERIOD
+		print_info Plan to sleep ${G_RET} seconds
+		sleep $G_RET
 		currentTimeMills
 		tmp_timing=$G_RET
 		print_info Timing: $(($tmp_timing - $START_TIME))ms
 		print_info Avg: $((($tmp_timing - $START_TIME)/$(($SUCCESS_COUNTER + $FAILURE_COUNTER))))ms per archive
 	done
 }
+
+TOTAL_SIZE=$((${#topic_list[@]} + ${#ng_list[@]} + ${#sc_list[@]} + ${#bn_list[@]}))
 
 archive ${topic_list[@]}
 DURING_NG=1

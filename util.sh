@@ -222,3 +222,35 @@ getBaMetaTsForFile() {
 	meta_ts+="${G_RET}"
 	G_RET=$meta_ts
 }
+
+nextSleep() {
+	currentTimeMills
+	local current_time_ms=$G_RET
+	local start_time_ms=$1
+	start_time_ms=$(($start_time_ms < $current_time_ms ? $start_time_ms : $current_time_ms))
+	local current_idx_count_from_one=$2
+	current_idx_count_from_one=$(($current_idx_count_from_one >= 1 ? $current_idx_count_from_one : 1))
+	local total_count=$3
+	total_count=$(($total_count >= 1 ? $total_count : 1))
+	local target_time_sec_each_round=$4
+	local target_time_ms_each_round=$(awk "BEGIN {printf \"%d\",${target_time_sec_each_round}*1000}")
+	target_time_ms_each_round=$(($target_time_ms_each_round >= 512 ? $target_time_ms_each_round : 512))
+	
+	local elapsed_time_ms=$(($current_time_ms - $start_time_ms))
+	elapsed_time_ms=$(($elapsed_time_ms >= 0 ? $elapsed_time_ms : 0))
+	local avg_ms_each=$(($elapsed_time_ms / $current_idx_count_from_one))
+	local remain_ms=$(($target_time_ms_each_round * $total_count - $elapsed_time_ms)) # could be negative, guarded by the 200ms bound
+	local next_sleep_ms=$(($remain_ms / ($total_count - $current_idx_count_from_one)))
+	next_sleep_ms=$(($next_sleep_ms >= 512 ? $next_sleep_ms : 512))
+	# print_warning star_time_ms $start_time_ms
+	# print_warning current_time_ms $current_time_ms
+	# print_warning current_idx_count_from_one $current_idx_count_from_one
+	# print_warning total_count $total_count
+	# print_warning target_time_sec_each_round $target_time_sec_each_round
+	# print_warning target_time_ms_each_round $target_time_ms_each_round
+	# print_warning elapsed_time_ms $elapsed_time_ms
+	# print_warning avg_ms_each $avg_ms_each
+	# print_warning remain_ms $remain_ms
+	# print_warning next_sleep_ms $next_sleep_ms
+	G_RET=$(awk "BEGIN {printf \"%.2f\",${next_sleep_ms}/1000}")
+}
