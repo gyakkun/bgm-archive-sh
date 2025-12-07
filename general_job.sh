@@ -140,16 +140,12 @@ print_success ${TOPIC_TYPE^^} LIST: ${topic_list[@]}
 # Shuffle the topic list
 # topic_list=(`shuf -e ${topic_list[@]}`)
 
-PREV_SLEEP=$E_SLEEP_PERIOD
-PREV_ITER_COST_MS=3840
 
 function archive() {
 	arr=("$@")
 	for i in ${arr[@]}
 	do
 	    ((TOTAL_COUNTER++))
-		currentTimeMills
-    	iter_start_ms=$G_RET
 		ten_thousand=$(expr $i / 10000)
 		printf -v ten_thousand "%02d" $ten_thousand
 		hundred=$(expr $(expr $i % 10000) / 100)
@@ -180,14 +176,9 @@ function archive() {
 			((FAILURE_COUNTER++))
 			print_error FAILURE_COUNTER: $FAILURE_COUNTER
 		fi
-
-		nextSleep $START_TIME $TOTAL_COUNTER $TOTAL_SIZE $E_SLEEP_PERIOD $PREV_SLEEP $PREV_ITER_COST_MS
+		nextSleep $START_TIME $TOTAL_COUNTER $TOTAL_SIZE $E_SLEEP_PERIOD
 		print_info Plan to sleep ${G_RET} seconds
 		sleep $G_RET
-		PREV_SLEEP=$G_RET
-		currentTimeMills
-    	now_ms=$G_RET
-		PREV_ITER_COST_MS=$(( $now_ms - $iter_start_ms ))
 		currentTimeMills
 		tmp_timing=$G_RET
 		print_info Timing: $(($tmp_timing - $START_TIME))ms
