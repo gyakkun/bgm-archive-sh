@@ -240,6 +240,8 @@ nextSleep() {
 	elapsed_time_ms=$(($elapsed_time_ms >= 0 ? $elapsed_time_ms : 0))
 	local avg_ms_each=$(($elapsed_time_ms / $current_idx_count_from_one))
 	local remain_ms=$(($target_time_ms_each_round * $total_count - $elapsed_time_ms)) # could be negative, guarded by the 200ms bound
+	local remain_rounds=$(($total_count - $current_idx_count_from_one))
+	remain_rounds=$(($remain_rounds >= 1 ? $remain_rounds : 1))
 	local next_sleep_ms=$(($remain_ms / ($total_count - $current_idx_count_from_one)))
 	next_sleep_ms=$(($next_sleep_ms >= 512 ? $next_sleep_ms : 512))
 	# print_warning star_time_ms $start_time_ms
