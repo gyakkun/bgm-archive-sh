@@ -201,23 +201,31 @@ getBaMetaTsForFile() {
 }
 
 nextSleep() {
-	currentTimeMills
-	local current_time_ms=$G_RET
-	local start_time_ms=$1
-	start_time_ms=$(($start_time_ms < $current_time_ms ? $start_time_ms : $current_time_ms))
-	local current_idx_count_from_one=$2
-	current_idx_count_from_one=$(($current_idx_count_from_one >= 1 ? $current_idx_count_from_one : 1))
-	local total_count=$3
-	total_count=$(($total_count >= 1 ? $total_count : 1))
-	local target_time_sec_each_round=$4
-	local target_time_ms_each_round=$(awk "BEGIN {printf \"%d\",${target_time_sec_each_round}*1000}")
-	target_time_ms_each_round=$(($target_time_ms_each_round >= 768 ? $target_time_ms_each_round : 768))
+        currentTimeMills
+        local current_time_ms=$G_RET
+        local start_time_ms=$1
+        start_time_ms=$(($start_time_ms < $current_time_ms ? $start_time_ms : $current_time_ms))
+        local current_idx_count_from_one=$2
+        current_idx_count_from_one=$(($current_idx_count_from_one >= 1 ? $current_idx_count_from_one : 1))
+        local total_count=$3
+        total_count=$(($total_count >= 1 ? $total_count : 1))
+        local target_time_sec_each_round=$4
+        local target_time_ms_each_round=$(awk "BEGIN {printf \"%d\",${target_time_sec_each_round}*1000}")
+        target_time_ms_each_round=$(($target_time_ms_each_round >= 768 ? $target_time_ms_each_round : 768))
         local target_total_time_ms=$(($target_time_ms_each_round * $total_count))
         target_total_time_ms=$(($target_total_time_ms >= 150000 ? $target_total_time_ms : 150000))
 
-	local elapsed_time_ms=$(($current_time_ms - $start_time_ms))
-	elapsed_time_ms=$(($elapsed_time_ms >= 0 ? $elapsed_time_ms : 0))
-	local avg_ms_each=$(($elapsed_time_ms / $current_idx_count_from_one))
-        local next_sleep_ms=$(($avg_ms_each >= $target_time_ms_each_round ? 768 : $target_time_ms_each_round))
-	G_RET=$(awk "BEGIN {printf \"%.2f\",${next_sleep_ms}/1000}")
+        local elapsed_time_ms=$(($current_time_ms - $start_time_ms))
+        elapsed_time_ms=$(($elapsed_time_ms >= 0 ? $elapsed_time_ms : 0))
+        local avg_ms_each=$(($elapsed_time_ms / $current_idx_count_from_one))
+        local remain_ms=$(($target_total_time_ms - $elapsed_time_ms)) # could be negative, guarded by the 200ms bound
+        local remain_rounds=$(($total_count - $current_idx_count_from_one))
+        remain_rounds=$(($remain_rounds >= 1 ? $remain_rounds : 1))
+        local next_sleep_ms=$(($remain_ms / $remain_rounds))
+        local alt_remain_ms=$(($target_total_time_ms - $avg_ms_each * $remain_rounds ))
+        local alt_next_sleep_ms=$(($alt_remain_ms / $remain_rounds))
+        next_sleep_ms=$(($next_sleep_ms >= $alt_next_sleep_ms ? $alt_next_sleep_ms : $next_sleep_ms))
+        next_sleep_ms=$(($next_sleep_ms >= 768 ? $next_sleep_ms : 768))
+        next_sleep_ms=$(($next_sleep_ms >= $target_time_ms_each_round ? $target_time_ms_each_round : $next_sleep_ms))
+        G_RET=$(awk "BEGIN {printf \"%.2f\",${next_sleep_ms}/1000}")
 }
