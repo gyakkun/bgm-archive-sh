@@ -103,7 +103,7 @@ curlToFile() {
 	curl_temp_file=`mktemp`
 	curl_cookie_file=${E_BGM_COOKIE_FILE:-/dev/null}
 	curl_ua=${E_BGM_UA:-"curl"}
-	curl_command_this_time=''$G_CURL_CMD' -w %{http_code} --connect-timeout 10 '
+	curl_command_this_time=''$G_CURL_CMD' -w %{http_code} --connect-timeout 8 '
 	curl_command_this_time+=' -b '$curl_cookie_file' '
 	curl_command_this_time+=' -A "'"${curl_ua}"'" '
 	curl_command_this_time+=' --max-time 20 '
@@ -112,7 +112,7 @@ curlToFile() {
 	curl_command_this_time+=' --retry-max-time 60 '
 	curl_command_this_time+=' -s -L --output '$curl_temp_file' '$1' '
 	print_info Going to execute $curl_command_this_time
-	curl_http_code=`$G_CURL_CMD -w %{http_code} --connect-timeout 10 -b $curl_cookie_file -A "${curl_ua}" --max-time 20 --retry 6 --retry-delay 3 --retry-max-time 60 -s -L --output $curl_temp_file $1`
+	curl_http_code=`$G_CURL_CMD -w %{http_code} --connect-timeout 8 -b $curl_cookie_file -A "${curl_ua}" --max-time 20 --retry 6 --retry-delay 3 --retry-max-time 60 -s -L --output $curl_temp_file $1`
 	if [[ $((curl_http_code)) -eq 200 ]]
 	then
 		: # NOP
@@ -143,7 +143,8 @@ trimHtmlBefore() {
 	NEW_USER=gyakkun
         NEW_UID=304116
         NEW_NAME='304116'
-	FORMHASH=$(sed -nE 's|.*href="https://bgm.tv/logout/([^"]+)".*|\1|p' $1 | head -1)
+	#FORMHASH=$(sed -nE 's|.*href="https://(bgm.tv|chii.in|bangumi.tv)/logout/([^"]+)".*|\1|p' $1 | head -1)
+	FORMHASH=$(sed -nE 's|.*href="https://chii.in/logout/([^"]+)".*|\1|p' $1 | head -1)
 	# dd if=/dev/urandom bs=4 count=1 2>/dev/null | xxd -p
 	FORMPLACEHOLDER=7f76f8a2
 
@@ -162,6 +163,10 @@ trimHtmlBefore() {
 	sed -i -E "s#(href=\"[^\"]*/?)${OLD_USER}([/\"\?]|$)#\1${NEW_UID}\2#g" $1
 	#echo debug3
 	sed -i -E -e "s#>([[:space:]]*)${OLD_USER}([[:space:]]*)<#>\1${NEW_USER}\2<#g" $1
+	# sed -i -E "s|(subReply\('[^']+', *[0-9]+, *[0-9]+, *[0-9]+, *)[0-9]+|\1${NEW_UID}|g" $1
+	sed -i -E 's|https://chii.in|https://bgm.tv|g' $1
+	sed -i -E 's|https://doujin.chii.in|https://doujin.bgm.tv|g' $1
+	sed -i -E 's|http://doujin.chii.in|https://doujin.bgm.tv|g' $1
         sed -i 's|<script.*</script>||g' $1
         sed -i 's|^[ \t]*||g' $1
         sed -i '/^$/d' $1
@@ -224,35 +229,31 @@ getBaMetaTsForFile() {
 }
 
 nextSleep() {
-	currentTimeMills
-	local current_time_ms=$G_RET
-	local start_time_ms=$1
-	start_time_ms=$(($start_time_ms < $current_time_ms ? $start_time_ms : $current_time_ms))
-	local current_idx_count_from_one=$2
-	current_idx_count_from_one=$(($current_idx_count_from_one >= 1 ? $current_idx_count_from_one : 1))
-	local total_count=$3
-	total_count=$(($total_count >= 1 ? $total_count : 1))
-	local target_time_sec_each_round=$4
-	local target_time_ms_each_round=$(awk "BEGIN {printf \"%d\",${target_time_sec_each_round}*1000}")
-	target_time_ms_each_round=$(($target_time_ms_each_round >= 512 ? $target_time_ms_each_round : 512))
-	
-	local elapsed_time_ms=$(($current_time_ms - $start_time_ms))
-	elapsed_time_ms=$(($elapsed_time_ms >= 0 ? $elapsed_time_ms : 0))
-	local avg_ms_each=$(($elapsed_time_ms / $current_idx_count_from_one))
-	local remain_ms=$(($target_time_ms_each_round * $total_count - $elapsed_time_ms)) # could be negative, guarded by the 200ms bound
-	local remain_rounds=$(($total_count - $current_idx_count_from_one))
-	remain_rounds=$(($remain_rounds >= 1 ? $remain_rounds : 1))
-	local next_sleep_ms=$(($remain_ms / $remain_rounds))
-	next_sleep_ms=$(($next_sleep_ms >= 512 ? $next_sleep_ms : 512))
-	# print_warning star_time_ms $start_time_ms
-	# print_warning current_time_ms $current_time_ms
-	# print_warning current_idx_count_from_one $current_idx_count_from_one
-	# print_warning total_count $total_count
-	# print_warning target_time_sec_each_round $target_time_sec_each_round
-	# print_warning target_time_ms_each_round $target_time_ms_each_round
-	# print_warning elapsed_time_ms $elapsed_time_ms
-	# print_warning avg_ms_each $avg_ms_each
-	# print_warning remain_ms $remain_ms
-	# print_warning next_sleep_ms $next_sleep_ms
-	G_RET=$(awk "BEGIN {printf \"%.2f\",${next_sleep_ms}/1000}")
+        currentTimeMills
+        local current_time_ms=$G_RET
+        local start_time_ms=$1
+        start_time_ms=$(($start_time_ms < $current_time_ms ? $start_time_ms : $current_time_ms))
+        local current_idx_count_from_one=$2
+        current_idx_count_from_one=$(($current_idx_count_from_one >= 1 ? $current_idx_count_from_one : 1))
+        local total_count=$3
+        total_count=$(($total_count >= 1 ? $total_count : 1))
+        local target_time_sec_each_round=$4
+        local target_time_ms_each_round=$(awk "BEGIN {printf \"%d\",${target_time_sec_each_round}*1000}")
+        target_time_ms_each_round=$(($target_time_ms_each_round >= 768 ? $target_time_ms_each_round : 768))
+        local target_total_time_ms=$(($target_time_ms_each_round * $total_count))
+        target_total_time_ms=$(($target_total_time_ms >= 150000 ? $target_total_time_ms : 150000))
+
+        local elapsed_time_ms=$(($current_time_ms - $start_time_ms))
+        elapsed_time_ms=$(($elapsed_time_ms >= 0 ? $elapsed_time_ms : 0))
+        local avg_ms_each=$(($elapsed_time_ms / $current_idx_count_from_one))
+        local remain_ms=$(($target_total_time_ms - $elapsed_time_ms)) # could be negative, guarded by the 200ms bound
+        local remain_rounds=$(($total_count - $current_idx_count_from_one))
+        remain_rounds=$(($remain_rounds >= 1 ? $remain_rounds : 1))
+        local next_sleep_ms=$(($remain_ms / $remain_rounds))
+        local alt_remain_ms=$(($target_total_time_ms - $avg_ms_each * $remain_rounds ))
+        local alt_next_sleep_ms=$(($alt_remain_ms / $remain_rounds))
+        next_sleep_ms=$(($next_sleep_ms >= $alt_next_sleep_ms ? $alt_next_sleep_ms : $next_sleep_ms))
+        next_sleep_ms=$(($next_sleep_ms >= 768 ? $next_sleep_ms : 768))
+	next_sleep_ms=$(($next_sleep_ms >= $target_time_ms_each_round ? $target_time_ms_each_round : $next_sleep_ms))
+        G_RET=$(awk "BEGIN {printf \"%.2f\",${next_sleep_ms}/1000}")
 }
