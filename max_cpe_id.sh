@@ -7,6 +7,7 @@ source ~/source/bgm-archive-blsm-sh/env.sh
 topic_type=("character" "person" "ep")
 time_hour=`date -Is -u | awk -F'T' '{printf $2}' | awk -F: '{printf $1}'`
 date_dd=`date -Is -u | awk -F'-' '{print $3}'  | awk -F'T' '{print $1}'`
+bgm_domain="$E_BGM_DOMAIN_LIST"
 
 echo time_hour $time_hour
 echo date_dd $date_dd
@@ -21,9 +22,9 @@ for i in  ${topic_type[@]};do
 	>$banned_file
         echo checking max id of topic $i
         tmpfile=`mktemp`
-	url="https://bgm.tv/$i"
+	url="https://$bgm_domain/$i"
 	if [ "$i" == "ep" ]; then
-		url="https://bgm.tv/wiki/activity?type=ep"
+		url="https://$bgm_domain/wiki/activity?type=ep"
 	fi
 	echo url $url
         curl -L -b $E_BGM_COOKIE_FILE -A "$E_BGM_UA" --output $tmpfile "$url"

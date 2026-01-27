@@ -140,6 +140,8 @@ print_success ${TOPIC_TYPE^^} LIST: ${topic_list[@]}
 # Shuffle the topic list
 # topic_list=(`shuf -e ${topic_list[@]}`)
 
+currentTimeMills
+START_TIME=$G_RET
 
 function archive() {
 	arr=("$@")
